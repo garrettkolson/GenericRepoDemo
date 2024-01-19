@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace GenericRepoDemo.DataAccess;
 
 // This is obviously pretty anemic, but a good starting point. 
-// Our actual implementations of this allow for includes, lazy/eager loading, and ordering as well.
+// Our actual implementations of this allow for ordering, skip/take, includes, and lazy/eager loading as well.
 
 public class EfCoreGenericRepository : IGenericRepository
 {
@@ -21,6 +21,8 @@ public class EfCoreGenericRepository : IGenericRepository
     {
         return await _context.FindAsync<T>(id);
     }
+    
+    // add more overloads for GetByIdAsync here, for models that have non-int keys
 
     public async Task<List<T>> GetAllAsync<T>() where T : DomainModelBase
     {
@@ -41,6 +43,8 @@ public class EfCoreGenericRepository : IGenericRepository
     {
         return await getQueryable(predicate).AnyAsync();
     }
+    
+    // because we've centralized the queryable logic in getQueryable, we can add other EF-friendly implementations as needed (.Count, .First, .Single, etc)
 
     public async Task AddAsync<T>(T entity) where T : DomainModelBase
     {
@@ -63,5 +67,7 @@ public class EfCoreGenericRepository : IGenericRepository
     private IQueryable<T> getQueryable<T>(Expression<Func<T, bool>> predicate) where T : DomainModelBase
     {
         return _context.Set<T>().Where(predicate);
+        
+        // Ordering, skip/take, and includes would go here, centralized to ensure our queries are formatted correctly
     }
 }
