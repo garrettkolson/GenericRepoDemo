@@ -25,7 +25,7 @@ async Task RunDemoAsync()
 {
     // Obviously, we would have an existing database, or seed one in a real implementation.
     // Since there's no data, these methods won't return anything right now,
-    // but this should get the point across about how to use the repo
+    // but this should get the point across about how to use the repo.
 
     if (host.Services.GetRequiredService<IGenericRepository>() is not { } repo) return;
     
@@ -44,6 +44,6 @@ async Task RunDemoAsync()
     // this will not compile
     //var notADomainModel = await repo.GetAllAsync<NotADomainModel>();
     
-    // Using the type constraint obviously won't prevent you from creating a domain model,
-    // but forgetting to add it to the relevant DbContext. This check should be done in your infrastructure tests.
+    // Using the type constraint obviously won't prevent you from creating a domain model, but forgetting to add it to the relevant DbContext.
+    // This check should be done in your infrastructure tests.
 }
