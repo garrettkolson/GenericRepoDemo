@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GenericRepoDemo.DataAccess;
 
+// This is obviously pretty anemic, but a good starting point. 
+// Our actual implementations of this allow for includes, lazy/eager loading, and ordering as well.
+
 public class EfCoreGenericRepository : IGenericRepository
 {
     private readonly GenericRepoDemoDbContext _context;
