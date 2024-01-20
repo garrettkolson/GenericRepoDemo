@@ -64,16 +64,3 @@ async Task RunDemoAsync()
     // Using the type constraint obviously won't prevent you from creating a domain model, and forgetting to add it to the relevant DbContext.
     // These types of checks should be done in your infrastructure tests.
 }
-
-async Task seedData()
-{
-    Random random = new();
-    var names = new string[] { "Alice", "Bob", "Charlie", "Doris", "Eli", "Fred", "George", "Harry", "Ira", "June" };
-    List<Customer> customers = new();
-    for (var i = 0; i < 100; i++)
-          customers.Add(new Customer { Id = i, Name = names[random.Next(0, 9)] });
-    
-    // TODO: set up local SqlServer conn
-    // TODO: call EnsureDatabaseCreated()
-    // TODO: add all to the db
-}
