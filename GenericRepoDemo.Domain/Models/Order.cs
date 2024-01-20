@@ -6,9 +6,9 @@ public class Order : DomainModelBase
 
     public int CustomerId { get; set; }
 
-    public ICollection<string> Tags { get; set; } = new List<string>();
+    public ICollection<Tag> Tags { get; set; } = new List<Tag>();
+    
+    public ICollection<Product> Products { get; set; } = new List<Product>();
     
     // other stuff
-
-    public ICollection<Product> Products { get; set; } = new List<Product>();
 }

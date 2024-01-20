@@ -46,6 +46,23 @@ public class EfCoreGenericRepository : IGenericRepository
     
     // because we've centralized the queryable logic in getQueryable, we can add other EF-friendly implementations as needed (.Count, .First, .Single, etc)
 
+    // if we need to return some arbitrary objects, we can do so like this, using a transform or projection func:
+    public async Task<List<TResult>> GetTransformedListAsync<TEntity, TResult>(
+        Expression<Func<TEntity, bool>> predicate, 
+        Expression<Func<TEntity, TResult>> transformFunc) 
+        where TEntity : DomainModelBase
+    {
+        return await getQueryable(predicate).Select(transformFunc).ToListAsync();
+    }
+
+    public async Task<TResult?> GetTransformedFirstOrDefaultAsync<TEntity, TResult>(
+        Expression<Func<TEntity, bool>> predicate,
+        Expression<Func<TEntity, TResult>> transformFunc)
+        where TEntity : DomainModelBase
+    {
+        return await getQueryable(predicate).Select(transformFunc).FirstOrDefaultAsync();
+    }
+
     public async Task AddAsync<T>(T entity) where T : DomainModelBase
     {
         _context.Set<T>().Add(entity);
@@ -64,9 +81,9 @@ public class EfCoreGenericRepository : IGenericRepository
         await _context.SaveChangesAsync();
     }
 
-    private IQueryable<T> getQueryable<T>(Expression<Func<T, bool>> predicate) where T : DomainModelBase
+    private IQueryable<TEntity> getQueryable<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : DomainModelBase
     {
-        return _context.Set<T>().Where(predicate);
+        return _context.Set<TEntity>().Where(predicate);
         
         // Ordering, skip/take, and includes would go here, centralized to ensure our queries are formatted correctly
     }

@@ -10,8 +10,18 @@ public interface IGenericRepository
     Task<List<T>> GetAllAsync<T>() where T : DomainModelBase;
     
     Task<List<T>> GetListAsync<T>(Expression<Func<T, bool>> predicate) where T : DomainModelBase;
+
+    Task<List<TResult>> GetTransformedListAsync<TEntity, TResult>(
+        Expression<Func<TEntity, bool>> predicate,
+        Expression<Func<TEntity, TResult>> transformFunc)
+        where TEntity : DomainModelBase;
     
     Task<T?> GetFirstOrDefaultAsync<T>(Expression<Func<T, bool>> predicate) where T : DomainModelBase;
+
+    Task<TResult?> GetTransformedFirstOrDefaultAsync<TEntity, TResult>(
+        Expression<Func<TEntity, bool>> predicate,
+        Expression<Func<TEntity, TResult>> transformFunc)
+        where TEntity : DomainModelBase;
     
     Task<bool> AnyAsync<T>(Expression<Func<T, bool>> predicate) where T : DomainModelBase;
     

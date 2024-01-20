@@ -33,7 +33,9 @@ async Task RunDemoAsync()
     var orderById = await repo.GetByIdAsync<Order>(1);
     
     // this is fine
-    var ordersByTag = await repo.GetListAsync<Order>(order => order.Tags.Contains("some_tag"));
+    var ordersByTag = await repo.GetListAsync<Order>(order => 
+        order.Tags
+            .Any(tag => tag.Description == "suspicious"));
     
     // this is fine
     var fred = await repo.GetFirstOrDefaultAsync<Customer>(customer => customer.Name == "Fred");
@@ -41,9 +43,37 @@ async Task RunDemoAsync()
     // this is fine
     var areThereAnyProducts = await repo.AnyAsync<Product>(product => product.Sku == "ABC123");
     
-    // this will not compile
+    // due to the type constraints, this will not compile
     //var notADomainModel = await repo.GetAllAsync<NotADomainModel>();
     
-    // Using the type constraint obviously won't prevent you from creating a domain model, but forgetting to add it to the relevant DbContext.
-    // This check should be done in your infrastructure tests.
+    // but, using the projected versions, this will work
+    var notADomainModel = await repo.GetTransformedFirstOrDefaultAsync<Product, NotADomainModel>(
+        product => product.Id == 1,
+        product => new NotADomainModel
+        {
+            Id = product.Id, 
+            SomeProp = product.Sku
+        });
+    
+    // or, if you only want some of the data without having to pull down everything first
+    var names = await repo.GetTransformedListAsync<Customer, string>(
+        customer => customer.Tags
+            .Any(tag => tag.Description == "buys a lot"),
+        customer => customer.Name);
+
+    // Using the type constraint obviously won't prevent you from creating a domain model, and forgetting to add it to the relevant DbContext.
+    // These types of checks should be done in your infrastructure tests.
+}
+
+async Task seedData()
+{
+    Random random = new();
+    var names = new string[] { "Alice", "Bob", "Charlie", "Doris", "Eli", "Fred", "George", "Harry", "Ira", "June" };
+    List<Customer> customers = new();
+    for (var i = 0; i < 100; i++)
+          customers.Add(new Customer { Id = i, Name = names[random.Next(0, 9)] });
+    
+    // TODO: set up local SqlServer conn
+    // TODO: call EnsureDatabaseCreated()
+    // TODO: add all to the db
 }
